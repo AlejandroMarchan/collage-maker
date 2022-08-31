@@ -1,0 +1,29 @@
+body {
+    background-color:#f3f6f8;
+    overflow-x: hidden;
+}
+
+.rc-slider-disabled .rc-slider-mark-text, .rc-slider-disabled .rc-slider-dot, .rc-slider-disabled .rc-slider-handle{
+    cursor: default !important;
+}
+
+.rc-slider-mark-text {
+    width: 25%;
+    font-size: 1rem;
+}
+
+.rc-slider-disabled .rc-slider-track {
+    background-color: var(--bs-info)
+}
+
+.rc-slider-mark-text-active {
+    font-weight: bold;
+}
+
+.uploaded-img {
+    transition: transform .2s;
+}
+
+.uploaded-image-col:hover img {
+    transform: scale(1.1);
+}
