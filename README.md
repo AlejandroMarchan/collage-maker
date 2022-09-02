@@ -12,7 +12,7 @@ pip install -r requirements.txt
 Then, run the following command to execute the app:
 
 ```
-gunicorn -b 0.0.0.0:8080 app.app:server --reload
+gunicorn -b 0.0.0.0:8080 app.app:server --reload --timeout 120
 ```
 
 The `--reload` tag at the end for live reloading on changes.

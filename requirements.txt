@@ -4,5 +4,6 @@ gunicorn
 dash-bootstrap-components
 dash-mantine-components
 dash-extensions
+cairosvg
 pandas
 plotly
