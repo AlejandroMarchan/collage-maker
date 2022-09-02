@@ -1,0 +1,1 @@
+web: gunicorn --workers=5 --timeout 120 -b 0.0.0.0:443 app:server
