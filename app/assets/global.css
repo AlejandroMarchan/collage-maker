@@ -32,3 +32,8 @@ body {
     background-position: center;
     background-size: cover;
 }
+
+#reference-img {
+    margin: auto;
+    display: flex;
+}
