@@ -8,4 +8,4 @@ COPY requirements.txt /app
 RUN pip install -r /app/requirements.txt
 COPY app /app
 
-RUN gunicorn --workers=5 --timeout 120 -b 0.0.0.0:443 app:server
+RUN gunicorn --workers=5 --timeout 120 app:server
