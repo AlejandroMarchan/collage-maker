@@ -9,6 +9,7 @@ import copy
 import binascii
 from random import shuffle
 from PIL import Image
+from PIL.ImageOps import exif_transpose
 from io import BytesIO
 import cairosvg
 import base64
@@ -1069,6 +1070,11 @@ def get_text_color(r, g, b):
 
 def collage(color_palette, base64_image):
 
+    # import json
+    # print('WRITING tests/color_palette.json')
+    # with open('tests/color_palette.json', 'w') as f:
+    #     f.write(json.dumps(color_palette, ensure_ascii=False, indent=4))
+
     tic = time.perf_counter()
 
     ima_size = 20
@@ -1082,6 +1088,7 @@ def collage(color_palette, base64_image):
         template = Image.open(out)
     else:
         template = Image.open(BytesIO(base64.b64decode(image)))
+    template = exif_transpose(template)
 
     MAX_PIXELS = 2000 * 2000
 
@@ -1095,6 +1102,27 @@ def collage(color_palette, base64_image):
     template_height = final_height//ima_size
     
     template = template.resize((template_width, template_height))
+
+    # Convert color palette to im objects
+    new_color_palette = {}
+
+    for color, images in color_palette.items():
+        parsed_images = []
+        for base64_image in images:
+            image_type, image = base64_image.split(',')
+
+            if 'svg' in image_type:
+                svg_im = base64.b64decode(image)
+                out = BytesIO()
+                cairosvg.svg2png(bytestring=svg_im, write_to=out, output_width=ima_size, output_height=ima_size)
+                im = Image.open(out)
+            else:
+                im = Image.open(BytesIO(base64.b64decode(image)))
+                im = im.resize((ima_size, ima_size))
+                new_im = im
+
+            parsed_images.append(im)
+        new_color_palette[color] = parsed_images
 
     new_im = Image.new('RGB', (template_width * ima_size, template_height * ima_size))
 
@@ -1115,27 +1143,17 @@ def collage(color_palette, base64_image):
                     closest_distance = dist
 
             color = cluster_hex_colors[closest_idx]
-            n_images = len(color_palette[color])
+            n_images = len(new_color_palette[color])
             last_image_idx = cluster_last_image_idx[closest_idx]
 
             if last_image_idx == n_images - 1:
-                shuffle(color_palette[color])
-                base64_image = color_palette[color][0]
+                shuffle(new_color_palette[color])
+                im = new_color_palette[color][0]
+                cluster_last_image_idx[closest_idx] = 0
             else:
-                base64_image = color_palette[color][0]
+                im = new_color_palette[color][last_image_idx + 1]
                 cluster_last_image_idx[closest_idx] += 1
 
-            image_type, image = base64_image.split(',')
-
-            if 'svg' in image_type:
-                svg_im = base64.b64decode(image)
-                out = BytesIO()
-                cairosvg.svg2png(bytestring=svg_im, write_to=out, output_width=ima_size, output_height=ima_size)
-                im = Image.open(out)
-            else:
-                im = Image.open(BytesIO(base64.b64decode(image)))
-                im = im.resize((ima_size, ima_size))
-            
             new_im.paste(im, (row * ima_size, col * ima_size))
 
     tac = time.perf_counter()
