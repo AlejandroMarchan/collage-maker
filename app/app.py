@@ -4,6 +4,7 @@ import plotly.express as px
 import logging
 import sys
 import time
+import os
 import math
 import copy
 import binascii
@@ -57,6 +58,7 @@ app = DashProxy(
         {"name": "viewport", "content": "width=device-width, initial-scale=1"},
     ],
 )
+app.config.suppress_callback_exceptions = True
 server = app.server
 
 app.layout = html.Div(
@@ -194,8 +196,21 @@ app.layout = html.Div(
                                 dbc.Row(
                                     [
                                         dbc.Col(
+                                            dbc.Button(
+                                                [
+                                                    html.I(className="fas fa-images me-2"),
+                                                    "Use set of example images",
+                                                ],
+                                                id='test-images-btn',
+                                                color="primary",
+                                            ),
+                                            width="3",
+                                            className="text-start"
+                                        ),
+                                        dbc.Col(
                                             html.H3(
-                                                "Uploaded images", 
+                                                "Uploaded 0 images",
+                                                id='uploaded-images-title',
                                                 className="card-title text-center"
                                             ),
                                             width="6"
@@ -322,7 +337,7 @@ app.layout = html.Div(
                                                                 type="number",
                                                                 min=1,
                                                                 step=1,
-                                                                value=4,
+                                                                value=20,
                                                                 required=True,
                                                                 debounce=False,
                                                                 placeholder="Number of colors to generate (default: 4)",
@@ -457,6 +472,19 @@ app.layout = html.Div(
                                     [
                                         dbc.Row(
                                             [
+                                                dbc.Col(
+                                                    [
+                                                        dbc.Button(
+                                                            [
+                                                                html.I(className="fas fa-image me-2"),
+                                                                "Use example reference image",
+                                                            ],
+                                                            id='test-reference-btn',
+                                                            color="primary"
+                                                        )
+                                                    ],
+                                                    width="auto"
+                                                ),
                                                 dbc.Col(
                                                     dcc.Upload(
                                                         id='upload-reference-image',
@@ -604,7 +632,7 @@ app.layout = html.Div(
     }
 )
 
-def parse_contents(i, contents, filename):
+def parse_contents(i, contents):
     return dbc.Col(
         [
             # html.H6(filename),
@@ -641,7 +669,22 @@ def parse_contents(i, contents, filename):
     Input('copyright', 'children'),
 )
 def set_copyright(dummy):
-    return f"© Copyright {date.today().year} - Alejandro Marchán 👨‍💻"
+    return [
+        f"© Copyright {date.today().year} - Alejandro Marchán", 
+        html.A(
+            html.Img(
+                src='https://avatars.githubusercontent.com/u/47084443?s=40&v=4', 
+                height='38px', 
+                id="github-avatar",
+                style={
+                    'display': 'inline',
+                    'margin-left': '15px',
+                    'margin-bottom': '6px'
+                }
+            ),
+            href='https://github.com/AlejandroMarchan'
+        )
+    ]
 
 ##### START STEP CONTROLLER #####
 
@@ -696,20 +739,27 @@ def next_step(next_click, prev_click, step):
     Output('upload-image', 'contents'),
     Output('total-images', 'children'),
     Output('none-display-images', 'children'),
+    Output('uploaded-images-title', 'children'),
+    Input('test-images-btn', 'n_clicks'),
     Input('upload-image', 'contents'),
     State('upload-image', 'filename'),
     State('output-image-upload', 'children'),
     State('none-display-images', 'children'),
     prevent_initial_call=True
 )
-def set_images(list_of_contents, list_of_names, prev_children, n_hidden_images):
+def set_images(n_clicks, list_of_contents, list_of_names, prev_children, n_hidden_images):
     # print('CALL SET IMAGES')
+    if dash.callback_context.triggered[0]['prop_id'] == 'test-images-btn.n_clicks':
+        prev_children = None
+        BASE_IMAGE_PATH = 'app/assets/images/'
+        list_of_contents = [f"data:image/jpg;base64,{base64.b64encode(open(BASE_IMAGE_PATH + filename, 'rb').read()).decode('utf-8')}" for filename in os.listdir(BASE_IMAGE_PATH)]
+
     counter = 0 if prev_children == None or len(prev_children) == 0 else prev_children[-1]['props']['id']['index'] + 1
     children = []
-    for c, n in zip(list_of_contents, list_of_names):
-        children.append(parse_contents(counter, c, n))
+    for c in list_of_contents:
+        children.append(parse_contents(counter, c))
         counter += 1
-    return children if prev_children == None else prev_children + children, {'display': 'none'}, False, [], counter, n_hidden_images - 1
+    return children if prev_children == None else prev_children + children, {'display': 'none'}, False, [], counter, n_hidden_images - 1, f'Uploaded {counter} images'
 
 # @app.callback(
 #     Output('output-image-upload', 'children'),
@@ -732,6 +782,7 @@ def set_images(list_of_contents, list_of_names, prev_children, n_hidden_images):
 @app.callback(
     Output('no-images-msg', 'style'),
     Output('next-step-btn', 'disabled'),
+    Output('uploaded-images-title', 'children'),
     Input('none-display-images', 'children'),
     State('total-images', 'children'),
     prevent_initial_call=True
@@ -739,9 +790,9 @@ def set_images(list_of_contents, list_of_names, prev_children, n_hidden_images):
 def show_no_image_msg(n_hidden_images, n_images):
     # print('CALL NO IMAGE MSG')
     if n_hidden_images != n_images:
-        return {'display': 'none'}, False
+        return {'display': 'none'}, False, f'Uploaded {n_images - n_hidden_images} images'
     else:
-        return None, True
+        return None, True, 'Uploaded 0 images'
 
 @app.callback(
     Output('none-display-images', 'children'),
@@ -750,6 +801,7 @@ def show_no_image_msg(n_hidden_images, n_images):
     prevent_initial_call=True
 )
 def update_none_display_images(n_clicks, n_images):
+    # print('update_none_display_images')
     return n_images + 1
 
 @app.callback(
@@ -764,11 +816,13 @@ def remove_image(n_clicks):
     Output('output-image-upload', 'children'),
     Output('total-images', 'children'),
     Output('none-display-images', 'children'),
+    Output('uploaded-images-title', 'children'),
     Input('delete-images-btn', 'n_clicks'),
+    State('output-image-upload', 'children'),
     prevent_initial_call=True
 )
-def remove_all_images(n_clicks):
-    return [], 0, -1
+def remove_all_images(n_clicks, images):
+    return [], 0, -1 if images != None and len(images) > 0 else 0, 'Uploaded 0 images'
 
 ##### END STEP 1 #####
 
@@ -1047,7 +1101,7 @@ def clicked_point(point_info, next_click, prev_click, colors_dict, color_palette
 
         text_color = get_text_color(r, g, b)
 
-        return [dbc.Col(html.Img(src=image, width='100%', height='109px', className="uploaded-img", style={'margin-bottom': '10px'}), width="2") for image in color_palette[color]], \
+        return [dbc.Col(html.Img(src=image, width='100%', height='109px', className="uploaded-img", style={'margin-bottom': '10px'}), width="auto") for image in color_palette[color]], \
             ["Images contained in: ", dbc.Badge(cluster_name, color=color, text_color=text_color, className="ms-1")]
     return [], []
 
@@ -1164,9 +1218,13 @@ def collage(color_palette, base64_image):
 @app.callback(
     Output("reference-image-col", "children"), 
     Input('upload-reference-image', 'contents'),
+    Input('test-reference-btn', 'n_clicks'),
     prevent_initial_call=True,
 )
-def show_reference_photo(contents):
+def show_reference_photo(contents, n_clicks):
+    if dash.callback_context.triggered[0]['prop_id'] == 'test-reference-btn.n_clicks':
+        contents = f"data:image/jpg;base64,{base64.b64encode(open('app/assets/reference.JPEG', 'rb').read()).decode('utf-8')}"
+
     return html.Img(src=contents, height='100%', id="reference-img"),
 
 # @app.callback(
