@@ -4,6 +4,10 @@ Create a photo mosaic from a reference photo using other pictures.
 
 ![Collage maker](gifs/collage_maker.gif)
 
+You can try the app in the following url: https://collage-creator.herokuapp.com/
+
+`Note: Heroku is a free host with CPU and request time limitations, i'm sorry for any inconvenience this may cause`
+
 ## HOW IT WORKS
 
 The app is made using the python library Dash, which allows creating a front-end from a python back-end.
