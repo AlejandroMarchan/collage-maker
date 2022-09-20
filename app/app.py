@@ -52,7 +52,7 @@ app = DashProxy(
         MultiplexerTransform(),  # makes it possible to target an output multiple times in callbacks
         LogTransform()  # makes it possible to write log messages to a Dash component
     ],
-    external_stylesheets=[dbc.themes.LUMEN, dbc.icons.FONT_AWESOME],
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
     external_scripts = ['https://unpkg.com/js-image-zoom/js-image-zoom.js', 'https://cdn.jsdelivr.net/npm/js-image-zoom/js-image-zoom.min.js'],
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"},
@@ -742,12 +742,11 @@ def next_step(next_click, prev_click, step):
     Output('uploaded-images-title', 'children'),
     Input('test-images-btn', 'n_clicks'),
     Input('upload-image', 'contents'),
-    State('upload-image', 'filename'),
     State('output-image-upload', 'children'),
     State('none-display-images', 'children'),
     prevent_initial_call=True
 )
-def set_images(n_clicks, list_of_contents, list_of_names, prev_children, n_hidden_images):
+def set_images(n_clicks, list_of_contents, prev_children, n_hidden_images):
     # print('CALL SET IMAGES')
     if dash.callback_context.triggered[0]['prop_id'] == 'test-images-btn.n_clicks':
         prev_children = None
