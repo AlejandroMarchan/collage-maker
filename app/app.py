@@ -24,10 +24,10 @@ import plotly.graph_objects as go
 
 # Init logging
 logging.basicConfig(
-    format='[%(asctime)s] [%(name)s:%(lineno)s] [%(levelname)s] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S %z',
+    format="[%(asctime)s] [%(name)s:%(lineno)s] [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S %z",
     stream=sys.stdout,
-    level=10
+    level=10,
 )
 
 log = logging.getLogger("PIL")
@@ -39,21 +39,29 @@ log.setLevel(logging.INFO)
 log = logging.getLogger("app")
 log.setLevel(logging.INFO)
 
-from dash_extensions.enrich import DashProxy, MultiplexerTransform, LogTransform, DashLogger
+from dash_extensions.enrich import (
+    DashProxy,
+    MultiplexerTransform,
+    LogTransform,
+    DashLogger,
+)
 from dash_extensions.enrich import Input, Output, State, html, dcc, ALL, MATCH
 import dash_bootstrap_components as dbc
 from dash_extensions import Lottie
 import dash
 
 app = DashProxy(
-    __name__, 
-    title="Collage maker", 
+    __name__,
+    title="Collage maker",
     transforms=[
         MultiplexerTransform(),  # makes it possible to target an output multiple times in callbacks
-        LogTransform()  # makes it possible to write log messages to a Dash component
+        LogTransform(),  # makes it possible to write log messages to a Dash component
     ],
     external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
-    external_scripts = ['https://unpkg.com/js-image-zoom/js-image-zoom.js', 'https://cdn.jsdelivr.net/npm/js-image-zoom/js-image-zoom.min.js'],
+    external_scripts=[
+        "https://unpkg.com/js-image-zoom/js-image-zoom.js",
+        "https://cdn.jsdelivr.net/npm/js-image-zoom/js-image-zoom.min.js",
+    ],
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"},
     ],
@@ -63,20 +71,17 @@ server = app.server
 
 app.layout = html.Div(
     [
-        dcc.Store(id='colors-dict', storage_type='memory'),
-        dcc.Store(id='color-palette', storage_type='memory'),
+        dcc.Store(id="colors-dict", storage_type="memory"),
+        dcc.Store(id="color-palette", storage_type="memory"),
         dbc.Row(
             [
-                dbc.Col(
-                    html.H1(["Collage Maker"]),
-                    width="auto"
-                ),
+                dbc.Col(html.H1(["Collage Maker"]), width="auto"),
             ],
             justify="center",
             align="center",
             style={
-                'margin-top': '30px',
-            }
+                "margin-top": "30px",
+            },
         ),
         # dbc.Row(
         #     [
@@ -99,52 +104,49 @@ app.layout = html.Div(
                             html.I(className="fas fa-arrow-left me-2"),
                             "Previous step",
                         ],
-                        id='prev-step-btn',
+                        id="prev-step-btn",
                         color="primary",
-                        style={
-                            'display': 'none'
-                        }
+                        style={"display": "none"},
                     ),
                     width="2",
-                    className="text-start"
+                    className="text-start",
                 ),
                 dbc.Col(
-                    dcc.Slider(0, 3,
+                    dcc.Slider(
+                        0,
+                        3,
                         step=None,
                         marks={
-                            0: 'Choose a bunch of photos 📸',
-                            1: 'Extracting images predominant color 🔍',
-                            2: 'Creating the color palette 🎨',
-                            3: 'Choose the reference photo 🖼️',
+                            0: "Choose a bunch of photos 📸",
+                            1: "Extracting images predominant color 🔍",
+                            2: "Creating the color palette 🎨",
+                            3: "Choose the reference photo 🖼️",
                         },
-                        id='step-slider',
+                        id="step-slider",
                         value=0,
-                        disabled=True
+                        disabled=True,
                     ),
-                    width="8"
+                    width="8",
                 ),
                 dbc.Col(
                     [
                         dbc.Button(
-                            [
-                                "Next step",
-                                html.I(className="fas fa-arrow-right ms-2")
-                            ],
-                            id='next-step-btn',
+                            ["Next step", html.I(className="fas fa-arrow-right ms-2")],
+                            id="next-step-btn",
                             disabled=True,
                             color="primary",
                         ),
                     ],
                     width="2",
-                    className="text-end"
+                    className="text-end",
                 ),
             ],
             justify="center",
             align="center",
             style={
-                'margin-top': '30px',
-                'margin-bottom': '20px',
-            }
+                "margin-top": "30px",
+                "margin-bottom": "20px",
+            },
         ),
         # STEP 1 DIV
         html.Div(
@@ -154,127 +156,130 @@ app.layout = html.Div(
                         dbc.Col(
                             [
                                 dcc.Upload(
-                                    id='upload-image',
+                                    id="upload-image",
                                     children=html.Div(
                                         [
-                                            'Drag and Drop or ',
-                                            html.A('Select the images', style={"cursor": "pointer", 'color': 'var(--bs-primary)'})
-                                        ], 
+                                            "Drag and Drop or ",
+                                            html.A(
+                                                "Select the images",
+                                                style={
+                                                    "cursor": "pointer",
+                                                    "color": "var(--bs-primary)",
+                                                },
+                                            ),
+                                        ],
                                         style={
-                                            'font-size': '1.25rem',
-                                            'width': '100%',
-                                            'height': '100px',
-                                            'lineHeight': '60px',
-                                            'borderWidth': '1px',
-                                            'borderStyle': 'dashed',
-                                            'borderRadius': '5px',
-                                            'textAlign': 'center',
-                                            'margin': '10px',
-                                            'padding-top': '15px'
+                                            "font-size": "1.25rem",
+                                            "width": "100%",
+                                            "height": "100px",
+                                            "lineHeight": "60px",
+                                            "borderWidth": "1px",
+                                            "borderStyle": "dashed",
+                                            "borderRadius": "5px",
+                                            "textAlign": "center",
+                                            "margin": "10px",
+                                            "padding-top": "15px",
                                         },
                                     ),
                                     accept="image/*",
                                     # Allow multiple files to be uploaded
-                                    multiple=True
+                                    multiple=True,
                                 )
                             ],
-                            width="12"
+                            width="12",
                         ),
                     ],
                     justify="center",
                     align="center",
-                    style={
-                        'margin-bottom': '20px',
-                        'margin-top': '2%'
-                    }
+                    style={"margin-bottom": "20px", "margin-top": "2%"},
                 ),
                 dbc.Card(
                     [
                         dbc.CardBody(
                             [
-
                                 dbc.Row(
                                     [
                                         dbc.Col(
                                             dbc.Button(
                                                 [
-                                                    html.I(className="fas fa-images me-2"),
+                                                    html.I(
+                                                        className="fas fa-images me-2"
+                                                    ),
                                                     "Use set of example images",
                                                 ],
-                                                id='test-images-btn',
+                                                id="test-images-btn",
                                                 color="primary",
                                             ),
                                             width="3",
-                                            className="text-start"
+                                            className="text-start",
                                         ),
                                         dbc.Col(
                                             html.H3(
                                                 "Uploaded 0 images",
-                                                id='uploaded-images-title',
-                                                className="card-title text-center"
+                                                id="uploaded-images-title",
+                                                className="card-title text-center",
                                             ),
-                                            width="6"
+                                            width="6",
                                         ),
                                         dbc.Col(
                                             dbc.Button(
                                                 [
-                                                    html.I(className="fas fa-times me-2"),
+                                                    html.I(
+                                                        className="fas fa-times me-2"
+                                                    ),
                                                     "Delete all images",
                                                 ],
-                                                id='delete-images-btn',
+                                                id="delete-images-btn",
                                                 color="danger",
                                             ),
                                             width="3",
-                                            className="text-end"
-                                        )
+                                            className="text-end",
+                                        ),
                                     ],
                                     justify="end",
-                                    align="center"
+                                    align="center",
                                 ),
                                 html.Hr(),
                                 dbc.Row(
                                     dbc.Col(
                                         [
                                             html.H4(
-                                                [
-                                                    "🤷‍♂️ No images uploaded yet"
-                                                ], 
+                                                ["🤷‍♂️ No images uploaded yet"],
                                                 className="text-center",
                                                 style={
-                                                    'margin-top': '1%',
-                                                    'margin-bottom': '20px'
-                                                }
+                                                    "margin-top": "1%",
+                                                    "margin-bottom": "20px",
+                                                },
                                             ),
                                             Lottie(
-                                                options=dict(loop=True, autoplay=True), width="25%",
+                                                options=dict(loop=True, autoplay=True),
+                                                width="25%",
                                                 url="https://assets5.lottiefiles.com/private_files/lf30_bn5winlb.json",
                                                 isClickToPauseDisabled=True,
                                                 style={
-                                                    'margin-bottom': '3%',
-                                                    'cursor': 'default'
-                                                }
-                                            )
+                                                    "margin-bottom": "3%",
+                                                    "cursor": "default",
+                                                },
+                                            ),
                                         ]
                                     ),
-                                    id='no-images-msg'
+                                    id="no-images-msg",
                                 ),
                                 dbc.Row(
-                                    id='output-image-upload',
+                                    id="output-image-upload",
                                     align="end",
-                                    justify="start"
+                                    justify="start",
                                 ),
                             ],
                             style={
-                                'min-height': '40vh',
-                            }
+                                "min-height": "40vh",
+                            },
                         ),
                     ],
-                    style={
-                        'margin-bottom': '50px'
-                    }
+                    style={"margin-bottom": "50px"},
                 ),
             ],
-            id="step-1-div"
+            id="step-1-div",
         ),
         # STEP 2 AND 3 DIV
         html.Div(
@@ -293,11 +298,11 @@ app.layout = html.Div(
                                                             dbc.Tooltip(
                                                                 "Change the seed to get different results.",
                                                                 target="seed-label",
-                                                                placement='top',
+                                                                placement="top",
                                                             ),
                                                             dbc.InputGroupText(
                                                                 [
-                                                                    "Seed: ", 
+                                                                    "Seed: ",
                                                                 ],
                                                                 id="seed-label",
                                                             ),
@@ -312,11 +317,11 @@ app.layout = html.Div(
                                                                 placeholder="Seed (default: 0)",
                                                                 style={
                                                                     "max-width": "80px"
-                                                                }
-                                                            )
+                                                                },
+                                                            ),
                                                         ],
                                                     ),
-                                                    width="auto"
+                                                    width="auto",
                                                 ),
                                                 dbc.Col(
                                                     dbc.InputGroup(
@@ -324,11 +329,11 @@ app.layout = html.Div(
                                                             dbc.Tooltip(
                                                                 "Number of clusters of different colors to try to generate.",
                                                                 target="n-colors-label",
-                                                                placement='top',
+                                                                placement="top",
                                                             ),
                                                             dbc.InputGroupText(
                                                                 [
-                                                                    "Number of Colors: ", 
+                                                                    "Number of Colors: ",
                                                                 ],
                                                                 id="n-colors-label",
                                                             ),
@@ -343,24 +348,26 @@ app.layout = html.Div(
                                                                 placeholder="Number of colors to generate (default: 4)",
                                                                 style={
                                                                     "max-width": "80px"
-                                                                }
-                                                            )
+                                                                },
+                                                            ),
                                                         ],
                                                     ),
                                                     id="n-colors-col",
-                                                    width="auto"
+                                                    width="auto",
                                                 ),
                                                 dbc.Col(
                                                     dbc.Button(
                                                         [
                                                             "Run again",
-                                                            html.I(className="fas fa-play ms-2")
+                                                            html.I(
+                                                                className="fas fa-play ms-2"
+                                                            ),
                                                         ],
-                                                        id='re-run-btn',
+                                                        id="re-run-btn",
                                                         color="primary",
                                                     ),
-                                                    width="auto"
-                                                )
+                                                    width="auto",
+                                                ),
                                             ],
                                             justify="center",
                                             align="center",
@@ -370,9 +377,7 @@ app.layout = html.Div(
                             ]
                         )
                     ],
-                    style={
-                        'margin-top': '25px'
-                    }
+                    style={"margin-top": "25px"},
                 ),
                 dbc.Row(
                     [
@@ -382,17 +387,15 @@ app.layout = html.Div(
                                     html.Div(
                                         dcc.Graph(
                                             id="main-colors-chart",
-                                            style={
-                                                'height': '60vh'
-                                            }
+                                            style={"height": "60vh"},
                                         ),
-                                        id='main-colors-chart-container'
+                                        id="main-colors-chart-container",
                                     )
                                 ],
                                 id="loading-main-colors-chart",
                                 type="default",
                             ),
-                            width="6"
+                            width="6",
                         ),
                         dbc.Col(
                             dbc.Card(
@@ -403,11 +406,11 @@ app.layout = html.Div(
                                                 [
                                                     dbc.Col(
                                                         html.H3(
-                                                            "No points clicked", 
-                                                            className="card-title text-center", 
-                                                            id='related-images-title'
+                                                            "No points clicked",
+                                                            className="card-title text-center",
+                                                            id="related-images-title",
                                                         ),
-                                                        width="12"
+                                                        width="12",
                                                     ),
                                                 ]
                                             ),
@@ -418,48 +421,45 @@ app.layout = html.Div(
                                                         html.H6(
                                                             [
                                                                 "Click on a data point in the chart to see the images with that predominant color"
-                                                            ], 
+                                                            ],
                                                             className="text-center",
                                                             style={
-                                                                'margin-top': '1%',
-                                                            }
+                                                                "margin-top": "1%",
+                                                            },
                                                         ),
                                                         Lottie(
-                                                            options=dict(loop=True, autoplay=True), width="25%",
+                                                            options=dict(
+                                                                loop=True, autoplay=True
+                                                            ),
+                                                            width="25%",
                                                             url="https://assets7.lottiefiles.com/packages/lf20_K0lHJ8.json",
                                                             isClickToPauseDisabled=True,
                                                             style={
-                                                                'margin-bottom': '3%',
-                                                                'cursor': 'default'
-                                                            }
-                                                        )
+                                                                "margin-bottom": "3%",
+                                                                "cursor": "default",
+                                                            },
+                                                        ),
                                                     ]
                                                 ),
-                                                id='display-images-col',
-                                                justify="center"
+                                                id="display-images-col",
+                                                justify="center",
                                             ),
                                         ],
-                                        style={
-                                            'height': '60vh',
-                                            'overflow-y': 'auto'
-                                        }
+                                        style={"height": "60vh", "overflow-y": "auto"},
                                     )
                                 ]
                             ),
-                            width="6"
-                        )
+                            width="6",
+                        ),
                     ],
                     align="center",
-                    style={
-                        'margin-top': '20px',
-                        'margin-bottom': '20px'
-                    }
-                )
+                    style={"margin-top": "20px", "margin-bottom": "20px"},
+                ),
             ],
             id="step-2-div",
             style={
-                'display': 'none',
-            }
+                "display": "none",
+            },
         ),
         # STEP 4 DIV
         html.Div(
@@ -476,71 +476,83 @@ app.layout = html.Div(
                                                     [
                                                         dbc.Button(
                                                             [
-                                                                html.I(className="fas fa-image me-2"),
+                                                                html.I(
+                                                                    className="fas fa-image me-2"
+                                                                ),
                                                                 "Use example reference image",
                                                             ],
-                                                            id='test-reference-btn',
-                                                            color="primary"
+                                                            id="test-reference-btn",
+                                                            color="primary",
                                                         )
                                                     ],
-                                                    width="auto"
+                                                    width="auto",
                                                 ),
                                                 dbc.Col(
                                                     dcc.Upload(
-                                                        id='upload-reference-image',
+                                                        id="upload-reference-image",
                                                         children=html.Div(
                                                             [
-                                                                'Drag and Drop or ',
-                                                                html.A('Select the reference image', style={"cursor": "pointer", 'color': 'var(--bs-primary)'})
-                                                            ], 
+                                                                "Drag and Drop or ",
+                                                                html.A(
+                                                                    "Select the reference image",
+                                                                    style={
+                                                                        "cursor": "pointer",
+                                                                        "color": "var(--bs-primary)",
+                                                                    },
+                                                                ),
+                                                            ],
                                                             style={
-                                                                'font-size': '1.25rem',
-                                                                'width': '100%',
-                                                                'height': '100px',
-                                                                'lineHeight': '60px',
-                                                                'borderWidth': '1px',
-                                                                'borderStyle': 'dashed',
-                                                                'borderRadius': '5px',
-                                                                'textAlign': 'center',
-                                                                'margin': '10px',
-                                                                'padding-top': '15px'
+                                                                "font-size": "1.25rem",
+                                                                "width": "100%",
+                                                                "height": "100px",
+                                                                "lineHeight": "60px",
+                                                                "borderWidth": "1px",
+                                                                "borderStyle": "dashed",
+                                                                "borderRadius": "5px",
+                                                                "textAlign": "center",
+                                                                "margin": "10px",
+                                                                "padding-top": "15px",
                                                             },
                                                         ),
                                                         accept="image/*",
                                                         # Allow multiple files to be uploaded
-                                                        multiple=False
+                                                        multiple=False,
                                                     ),
-                                                    width="6"
+                                                    width="6",
                                                 ),
                                                 dbc.Col(
                                                     [
                                                         dbc.Button(
                                                             [
                                                                 "Generate collage",
-                                                                html.I(className="fas fa-th ms-2")
+                                                                html.I(
+                                                                    className="fas fa-th ms-2"
+                                                                ),
                                                             ],
-                                                            id='generate-collage-btn',
+                                                            id="generate-collage-btn",
                                                             color="success",
                                                             style={
-                                                                'margin-bottom': '8px'
-                                                            }
+                                                                "margin-bottom": "8px"
+                                                            },
                                                         ),
                                                         dbc.Button(
                                                             [
-                                                                html.I(className="fas fa-download me-2"),
+                                                                html.I(
+                                                                    className="fas fa-download me-2"
+                                                                ),
                                                                 "Download result",
                                                             ],
-                                                            id='download-collage-btn',
+                                                            id="download-collage-btn",
                                                             disabled=True,
-                                                            color="primary"
-                                                        ), 
-                                                        dcc.Download(id="download-collage")
+                                                            color="primary",
+                                                        ),
+                                                        dcc.Download(
+                                                            id="download-collage"
+                                                        ),
                                                     ],
                                                     width="auto",
-                                                    style={
-                                                        'display': 'grid'
-                                                    }
-                                                )
+                                                    style={"display": "grid"},
+                                                ),
                                             ],
                                             justify="center",
                                             align="center",
@@ -550,215 +562,260 @@ app.layout = html.Div(
                             ]
                         )
                     ],
-                    style={
-                        'margin-top': '25px'
-                    }
+                    style={"margin-top": "25px"},
                 ),
                 dbc.Row(
                     [
                         dbc.Col(
                             [
                                 Lottie(
-                                    options=dict(loop=True, autoplay=True), width="60%",
+                                    options=dict(loop=True, autoplay=True),
+                                    width="60%",
                                     url="https://assets8.lottiefiles.com/packages/lf20_GxMZME.json",
                                     isClickToPauseDisabled=True,
-                                    style={
-                                        'margin-left': '128%',
-                                        'cursor': 'default'
-                                    }
+                                    style={"margin-left": "128%", "cursor": "default"},
                                 ),
-                                html.H4("Please, upload a reference image", id="collage-msg", className="text-center", style={'margin-left': '36%', 'position': 'absolute'}),
+                                html.H4(
+                                    "Please, upload a reference image",
+                                    id="collage-msg",
+                                    className="text-center",
+                                    style={
+                                        "margin-left": "36%",
+                                        "position": "absolute",
+                                    },
+                                ),
                             ],
-                            id='reference-image-col',
+                            id="reference-image-col",
                             width="4",
-                            style={
-                                'height': '430px'
-                            }
+                            style={"height": "430px"},
                         ),
                         dcc.Loading(
-                            id='collage-image-col',
-                            parent_className='col-4',
-                            parent_style={
-                                'padding': '0'
-                            }
-                        )
+                            id="collage-image-col",
+                            parent_className="col-4",
+                            parent_style={"padding": "0"},
+                        ),
                     ],
-                    style={
-                        'margin-top': '20px',
-                        'margin-bottom': '50px'
-                    }
-                )
+                    style={"margin-top": "20px", "margin-bottom": "50px"},
+                ),
             ],
             id="step-4-div",
             style={
-                'display': 'none',
-            }
+                "display": "none",
+            },
         ),
         html.Footer(
-            html.H6("© Copyright 2012 - Alejandro Marchán", id="copyright", className="text-center"),
-            id='footer',
-            style={
-                'margin-top': 'auto',
-                'height': '50px'
-            }
+            html.H6(
+                "© Copyright 2012 - Alejandro Marchán",
+                id="copyright",
+                className="text-center",
+            ),
+            id="footer",
+            style={"margin-top": "auto", "height": "50px"},
         ),
-        html.P(
-            0,
-            id='total-images',
-            style={
-                'display': 'none'
-            }
-        ),
-        html.P(
-            0,
-            id='none-display-images',
-            style={
-                'display': 'none'
-            }
-        ),
-        html.P(
-            id='placeholder',
-            style={
-                'display': 'none'
-            }
-        )
+        html.P(0, id="total-images", style={"display": "none"}),
+        html.P(0, id="none-display-images", style={"display": "none"}),
+        html.P(id="placeholder", style={"display": "none"}),
     ],
     style={
-        'width': '90%',
-        'margin': 'auto',
-        'height': '100vh',
-        'display': 'flex',
-        'flex-direction': 'column' 
-    }
+        "width": "90%",
+        "margin": "auto",
+        "height": "100vh",
+        "display": "flex",
+        "flex-direction": "column",
+    },
 )
+
 
 def parse_contents(i, contents):
     return dbc.Col(
         [
             # html.H6(filename),
-            html.Img(src=contents, width='100%', height='100%', className="uploaded-img"),
+            html.Img(
+                src=contents, width="100%", height="100%", className="uploaded-img"
+            ),
             dbc.Button(
                 html.I(className="fas fa-times"),
-                id={
-                    'type': 'remove-image-btn',
-                    'index': i
-                },
-                color="danger", 
+                id={"type": "remove-image-btn", "index": i},
+                color="danger",
                 className="me-1",
-                style={
-                    'position': 'absolute',
-                    'top': '-7px',
-                    'right': '0'
-                },
+                style={"position": "absolute", "top": "-7px", "right": "0"},
             ),
         ],
-        id={
-            'type': 'uploaded-image-col',
-            'index': i
-        },
+        id={"type": "uploaded-image-col", "index": i},
         className="uploaded-image-col",
         style={
-            'margin-bottom': '10px',
-            'position': 'relative',
+            "margin-bottom": "10px",
+            "position": "relative",
         },
-        width="1"
+        width="1",
     )
 
+
 @app.callback(
-    Output('copyright', 'children'),
-    Input('copyright', 'children'),
+    Output("copyright", "children"),
+    Input("copyright", "children"),
 )
 def set_copyright(dummy):
     return [
-        f"© Copyright {date.today().year} - Alejandro Marchán", 
+        f"© Copyright {date.today().year} - Alejandro Marchán",
         html.A(
             html.Img(
-                src='https://avatars.githubusercontent.com/u/47084443?s=40&v=4', 
-                height='38px', 
+                src="https://avatars.githubusercontent.com/u/47084443?s=40&v=4",
+                height="38px",
                 id="github-avatar",
                 style={
-                    'display': 'inline',
-                    'margin-left': '15px',
-                    'margin-bottom': '6px'
-                }
+                    "display": "inline",
+                    "margin-left": "15px",
+                    "margin-bottom": "6px",
+                },
             ),
-            href='https://github.com/AlejandroMarchan'
-        )
+            href="https://github.com/AlejandroMarchan",
+        ),
     ]
+
 
 ##### START STEP CONTROLLER #####
 
+
 @app.callback(
-    Output('step-slider', 'value'),
-    Output('step-1-div', 'style'),
-    Output('step-2-div', 'style'),
-    Output('step-4-div', 'style'),
-    Output('next-step-btn', 'style'),
-    Output('next-step-btn', 'disabled'),
-    Output('prev-step-btn', 'style'),
-    Output('prev-step-btn', 'disabled'),
-    Output('n-colors-col', 'style'),
-    Input('next-step-btn', 'n_clicks'),
-    Input('prev-step-btn', 'n_clicks'),
-    State('step-slider', 'value'),
-    prevent_initial_call=True
+    Output("step-slider", "value"),
+    Output("step-1-div", "style"),
+    Output("step-2-div", "style"),
+    Output("step-4-div", "style"),
+    Output("next-step-btn", "style"),
+    Output("next-step-btn", "disabled"),
+    Output("prev-step-btn", "style"),
+    Output("prev-step-btn", "disabled"),
+    Output("n-colors-col", "style"),
+    Input("next-step-btn", "n_clicks"),
+    Input("prev-step-btn", "n_clicks"),
+    State("step-slider", "value"),
+    prevent_initial_call=True,
 )
 def next_step(next_click, prev_click, step):
     # print('CALL NEXT STEP')
     next_step = step
-    if dash.callback_context.triggered[0]['prop_id'] == 'next-step-btn.n_clicks':
+    if dash.callback_context.triggered[0]["prop_id"] == "next-step-btn.n_clicks":
         next_step = step + 1 if step < 3 else 3
         if next_click == None:
             return dash.no_update
-    
-    if dash.callback_context.triggered[0]['prop_id'] == 'prev-step-btn.n_clicks':
-        next_step = step - 1 if step != 0 else 0   
+
+    if dash.callback_context.triggered[0]["prop_id"] == "prev-step-btn.n_clicks":
+        next_step = step - 1 if step != 0 else 0
         if prev_click == None:
             return dash.no_update
 
-    log.info(f'Moving to step {next_step}')
+    log.info(f"Moving to step {next_step}")
     if next_step == 0:
         # step-slider.value, step-1-div.style, step-2-div.style, next-step-btn.style, next-step-btn.disabled, prev-step-btn.style, prev-step-btn.disabled
-        return next_step, None, {'display': 'none'}, {'display': 'none'}, None, False, {'display': 'none'}, False, None
+        return (
+            next_step,
+            None,
+            {"display": "none"},
+            {"display": "none"},
+            None,
+            False,
+            {"display": "none"},
+            False,
+            None,
+        )
     elif next_step == 1:
-        return next_step, {'display': 'none'}, None, {'display': 'none'}, None, False, None, False, {'display': 'none'}
+        return (
+            next_step,
+            {"display": "none"},
+            None,
+            {"display": "none"},
+            None,
+            False,
+            None,
+            False,
+            {"display": "none"},
+        )
     elif next_step == 2:
-        return next_step, {'display': 'none'}, None, {'display': 'none'}, None, False, None, False, None
+        return (
+            next_step,
+            {"display": "none"},
+            None,
+            {"display": "none"},
+            None,
+            False,
+            None,
+            False,
+            None,
+        )
     elif next_step == 3:
-        return next_step, {'display': 'none'}, {'display': 'none'}, None, {'display': 'none'}, False, None, False, None
-    return next_step, {'display': 'none'}, {'display': 'none'}, {'display': 'none'}, None, False, None, False, None
+        return (
+            next_step,
+            {"display": "none"},
+            {"display": "none"},
+            None,
+            {"display": "none"},
+            False,
+            None,
+            False,
+            None,
+        )
+    return (
+        next_step,
+        {"display": "none"},
+        {"display": "none"},
+        {"display": "none"},
+        None,
+        False,
+        None,
+        False,
+        None,
+    )
+
 
 ##### END STEP CONTROLLER #####
 
 ##### START STEP 1 #####
 
+
 @app.callback(
-    Output('output-image-upload', 'children'),
-    Output('no-images-msg', 'style'),
-    Output('next-step-btn', 'disabled'),
-    Output('upload-image', 'contents'),
-    Output('total-images', 'children'),
-    Output('none-display-images', 'children'),
-    Output('uploaded-images-title', 'children'),
-    Input('test-images-btn', 'n_clicks'),
-    Input('upload-image', 'contents'),
-    State('output-image-upload', 'children'),
-    State('none-display-images', 'children'),
-    prevent_initial_call=True
+    Output("output-image-upload", "children"),
+    Output("no-images-msg", "style"),
+    Output("next-step-btn", "disabled"),
+    Output("upload-image", "contents"),
+    Output("total-images", "children"),
+    Output("none-display-images", "children"),
+    Output("uploaded-images-title", "children"),
+    Input("test-images-btn", "n_clicks"),
+    Input("upload-image", "contents"),
+    State("output-image-upload", "children"),
+    State("none-display-images", "children"),
+    prevent_initial_call=True,
 )
 def set_images(n_clicks, list_of_contents, prev_children, n_hidden_images):
     # print('CALL SET IMAGES')
-    if dash.callback_context.triggered[0]['prop_id'] == 'test-images-btn.n_clicks':
+    if dash.callback_context.triggered[0]["prop_id"] == "test-images-btn.n_clicks":
         prev_children = None
-        BASE_IMAGE_PATH = 'app/assets/images/'
-        list_of_contents = [f"data:image/jpg;base64,{base64.b64encode(open(BASE_IMAGE_PATH + filename, 'rb').read()).decode('utf-8')}" for filename in os.listdir(BASE_IMAGE_PATH)]
+        BASE_IMAGE_PATH = "app/assets/images/"
+        list_of_contents = [
+            f"data:image/jpg;base64,{base64.b64encode(open(BASE_IMAGE_PATH + filename, 'rb').read()).decode('utf-8')}"
+            for filename in os.listdir(BASE_IMAGE_PATH)
+        ]
 
-    counter = 0 if prev_children == None or len(prev_children) == 0 else prev_children[-1]['props']['id']['index'] + 1
+    counter = (
+        0
+        if prev_children == None or len(prev_children) == 0
+        else prev_children[-1]["props"]["id"]["index"] + 1
+    )
     children = []
     for c in list_of_contents:
         children.append(parse_contents(counter, c))
         counter += 1
-    return children if prev_children == None else prev_children + children, {'display': 'none'}, False, [], counter, n_hidden_images - 1, f'Uploaded {counter} images'
+    return (
+        children if prev_children == None else prev_children + children,
+        {"display": "none"},
+        False,
+        [],
+        counter,
+        n_hidden_images - 1,
+        f"Uploaded {counter} images",
+    )
+
 
 # @app.callback(
 #     Output('output-image-upload', 'children'),
@@ -778,120 +835,139 @@ def set_images(n_clicks, list_of_contents, prev_children, n_hidden_images):
 #         del children[index]
 #     return children
 
+
 @app.callback(
-    Output('no-images-msg', 'style'),
-    Output('next-step-btn', 'disabled'),
-    Output('uploaded-images-title', 'children'),
-    Input('none-display-images', 'children'),
-    State('total-images', 'children'),
-    prevent_initial_call=True
+    Output("no-images-msg", "style"),
+    Output("next-step-btn", "disabled"),
+    Output("uploaded-images-title", "children"),
+    Input("none-display-images", "children"),
+    State("total-images", "children"),
+    prevent_initial_call=True,
 )
 def show_no_image_msg(n_hidden_images, n_images):
     # print('CALL NO IMAGE MSG')
     if n_hidden_images != n_images:
-        return {'display': 'none'}, False, f'Uploaded {n_images - n_hidden_images} images'
+        return (
+            {"display": "none"},
+            False,
+            f"Uploaded {n_images - n_hidden_images} images",
+        )
     else:
-        return None, True, 'Uploaded 0 images'
+        return None, True, "Uploaded 0 images"
+
 
 @app.callback(
-    Output('none-display-images', 'children'),
-    Input({'type': 'remove-image-btn', 'index': ALL}, 'n_clicks'),
-    State('none-display-images', 'children'),
-    prevent_initial_call=True
+    Output("none-display-images", "children"),
+    Input({"type": "remove-image-btn", "index": ALL}, "n_clicks"),
+    State("none-display-images", "children"),
+    prevent_initial_call=True,
 )
 def update_none_display_images(n_clicks, n_images):
     # print('update_none_display_images')
     return n_images + 1
 
-@app.callback(
-    Output({'type': 'uploaded-image-col', 'index': MATCH}, 'style'),
-    Input({'type': 'remove-image-btn', 'index': MATCH}, 'n_clicks'),
-    prevent_initial_call=True
-)
-def remove_image(n_clicks):
-    return {'display': 'none'}
 
 @app.callback(
-    Output('output-image-upload', 'children'),
-    Output('total-images', 'children'),
-    Output('none-display-images', 'children'),
-    Output('uploaded-images-title', 'children'),
-    Input('delete-images-btn', 'n_clicks'),
-    State('output-image-upload', 'children'),
-    prevent_initial_call=True
+    Output({"type": "uploaded-image-col", "index": MATCH}, "style"),
+    Input({"type": "remove-image-btn", "index": MATCH}, "n_clicks"),
+    prevent_initial_call=True,
+)
+def remove_image(n_clicks):
+    return {"display": "none"}
+
+
+@app.callback(
+    Output("output-image-upload", "children"),
+    Output("total-images", "children"),
+    Output("none-display-images", "children"),
+    Output("uploaded-images-title", "children"),
+    Input("delete-images-btn", "n_clicks"),
+    State("output-image-upload", "children"),
+    prevent_initial_call=True,
 )
 def remove_all_images(n_clicks, images):
-    return [], 0, -1 if images != None and len(images) > 0 else 0, 'Uploaded 0 images'
+    return [], 0, -1 if images != None and len(images) > 0 else 0, "Uploaded 0 images"
+
 
 ##### END STEP 1 #####
 
 ##### START STEP 2 AND 3 #####
 
+
 def extract_dominant_color(base64_image, seed):
-    image_type, image = base64_image.split(',')
+    image_type, image = base64_image.split(",")
     try:
-        if 'svg' in image_type:
+        if "svg" in image_type:
             svg_im = base64.b64decode(image)
             out = BytesIO()
-            cairosvg.svg2png(bytestring=svg_im, write_to=out, output_width=150, output_height=150)
+            cairosvg.svg2png(
+                bytestring=svg_im, write_to=out, output_width=150, output_height=150
+            )
             im = Image.open(out)
         else:
             im = Image.open(BytesIO(base64.b64decode(image)))
     except Exception as e:
-        log.error('An image could not be parsed')
-        return [0, 0, 0], '000000'
-    
-    im = im.resize((100, 100))      # optional, to reduce time
+        log.error("An image could not be parsed")
+        return [0, 0, 0], "000000"
+
+    im = im.resize((100, 100))  # optional, to reduce time
     ar = np.asarray(im)
     shape = ar.shape
     if len(shape) < 3:
-        return [255, 255, 255], 'FFFFFF'
+        return [255, 255, 255], "FFFFFF"
 
     ar = ar.reshape(np.product(shape[:2]), shape[2]).astype(float)
 
     codes, dist = scipy.cluster.vq.kmeans(ar, 3, seed=seed)
 
-    vecs, dist = scipy.cluster.vq.vq(ar, codes)         # assign codes
-    counts, bins = np.histogram(vecs, len(codes))    # count occurrences
+    vecs, dist = scipy.cluster.vq.vq(ar, codes)  # assign codes
+    counts, bins = np.histogram(vecs, len(codes))  # count occurrences
 
-    index_max = np.argmax(counts)                    # find most frequent
+    index_max = np.argmax(counts)  # find most frequent
     peak = codes[index_max]
-    colour = binascii.hexlify(bytearray(int(c) for c in peak[:3])).decode('ascii')
+    colour = binascii.hexlify(bytearray(int(c) for c in peak[:3])).decode("ascii")
 
     return list(peak), colour
 
+
 def ms(x, y, z, radius, resolution=20):
     """Return the coordinates for plotting a sphere centered at (x,y,z)"""
-    u, v = np.mgrid[0:2*np.pi:resolution*2j, 0:np.pi:resolution*1j]
-    X = radius * np.cos(u)*np.sin(v) + x
-    Y = radius * np.sin(u)*np.sin(v) + y
+    u, v = np.mgrid[0 : 2 * np.pi : resolution * 2j, 0 : np.pi : resolution * 1j]
+    X = radius * np.cos(u) * np.sin(v) + x
+    Y = radius * np.sin(u) * np.sin(v) + y
     Z = radius * np.cos(v) + z
     return (X, Y, Z)
+
 
 def plot_graph(df_list, marker_size=5, spheres=[], sphere_colors=[]):
     df = pd.DataFrame(df_list)
 
-    fig = px.scatter_3d(df, 
-        x='red', y='green', z='blue',
+    fig = px.scatter_3d(
+        df,
+        x="red",
+        y="green",
+        z="blue",
         color="color",
-        color_discrete_sequence=[x['color'] for x in df_list], 
-        hover_data=['color']
+        color_discrete_sequence=[x["color"] for x in df_list],
+        hover_data=["color"],
     )
-    fig.update_traces(marker_size = marker_size)
+    fig.update_traces(marker_size=marker_size)
     # Creating the sphere
     i = 0
     for sphere, sphere_color in zip(spheres, sphere_colors):
         (x_pns_surface, y_pns_surface, z_pns_suraface) = ms(*sphere)
         colorscale = [[0, sphere_color], [1, sphere_color]]
-        fig.add_traces(go.Surface(name=f'Cluster {i}',
-                                  x=x_pns_surface, 
-                                  y=y_pns_surface, 
-                                  z=z_pns_suraface, 
-                                  opacity=0.3, 
-                                  colorscale=colorscale, 
-                                  showscale=False,
-                                  hoverinfo=['name']
-                        )
+        fig.add_traces(
+            go.Surface(
+                name=f"Cluster {i}",
+                x=x_pns_surface,
+                y=y_pns_surface,
+                z=z_pns_suraface,
+                opacity=0.3,
+                colorscale=colorscale,
+                showscale=False,
+                hoverinfo=["name"],
+            )
         )
         i += 1
 
@@ -901,47 +977,53 @@ def plot_graph(df_list, marker_size=5, spheres=[], sphere_colors=[]):
     camera = dict(
         up=dict(x=0, y=0, z=1),
         center=dict(x=0, y=0, z=-0.25),
-        eye=dict(x=1.25, y=1.25, z=1.25)
+        eye=dict(x=1.25, y=1.25, z=1.25),
     )
 
     fig.update_layout(scene_camera=camera)
 
     return fig
 
+
 def generate_colors_dict(images, seed):
 
-    base64_images = [im['props']['children'][0]['props']['src'] for im in images if im['props']['style'] != {'display': 'none'}]
+    base64_images = [
+        im["props"]["children"][0]["props"]["src"]
+        for im in images
+        if im["props"]["style"] != {"display": "none"}
+    ]
 
     colors_dict = {}
     for base64_image in base64_images:
         values, hex = extract_dominant_color(base64_image, seed)
         if hex not in colors_dict:
             colors_dict[hex] = {
-                'color': '#' + hex,
-                'images': [base64_image],
-                'rgb': (values[0], values[1], values[2]),
-                'red': values[0],
-                'green': values[1],
-                'blue': values[2]
+                "color": "#" + hex,
+                "images": [base64_image],
+                "rgb": (values[0], values[1], values[2]),
+                "red": values[0],
+                "green": values[1],
+                "blue": values[2],
             }
         else:
-            colors_dict[hex]['images'].append(base64_image)
+            colors_dict[hex]["images"].append(base64_image)
 
     return colors_dict
+
 
 def generate_color_palette(colors_dict, n_clusters, seed):
 
     colors = list(colors_dict.keys())
 
-    hex_colors = [elem['rgb'] for elem in colors_dict.values()]
+    hex_colors = [elem["rgb"] for elem in colors_dict.values()]
 
     data = np.array(hex_colors).reshape(np.product(len(colors)), 3).astype(float)
 
     centroids, radius = scipy.cluster.vq.kmeans(data, n_clusters, seed=seed)
 
-    clusters, distances = scipy.cluster.vq.vq(data, centroids)         # assign codes
+    clusters, distances = scipy.cluster.vq.vq(data, centroids)  # assign codes
 
-    counts, bins = np.histogram(clusters, len(centroids))    # count occurrences
+    counts, bins = np.histogram(clusters, len(centroids))  # count occurrences
 
     cluster_max_distances = {}
     color_palette = {}
@@ -949,76 +1031,78 @@ def generate_color_palette(colors_dict, n_clusters, seed):
     for color, cluster, distance in zip(colors, clusters, distances):
         if cluster not in cluster_max_distances:
             cluster_max_distances[cluster] = {
-                'max': distance,
-                'min': distance,
-                'color': '#' + color
+                "max": distance,
+                "min": distance,
+                "color": "#" + color,
             }
         else:
-            cluster_max_distances[cluster]['max'] = max(cluster_max_distances[cluster]['max'], distance)
-            if distance < cluster_max_distances[cluster]['min']:
-                cluster_max_distances[cluster]['min'] = distance
-                cluster_max_distances[cluster]['color'] = '#' + color
+            cluster_max_distances[cluster]["max"] = max(
+                cluster_max_distances[cluster]["max"], distance
+            )
+            if distance < cluster_max_distances[cluster]["min"]:
+                cluster_max_distances[cluster]["min"] = distance
+                cluster_max_distances[cluster]["color"] = "#" + color
 
         if cluster not in color_palette:
-            color_palette[cluster] = copy.deepcopy(colors_dict[color]['images'])
+            color_palette[cluster] = copy.deepcopy(colors_dict[color]["images"])
         else:
-            color_palette[cluster] += colors_dict[color]['images']
+            color_palette[cluster] += colors_dict[color]["images"]
 
-    log.info(f'{len(list(centroids))} clusters generated')
+    log.info(f"{len(list(centroids))} clusters generated")
     spheres = []
     sphere_colors = []
     for i, centroid in enumerate(centroids):
         sphere = centroid.tolist()
-        sphere.append(cluster_max_distances[i]['max'])
+        sphere.append(cluster_max_distances[i]["max"])
         spheres.append(sphere)
-        sphere_colors.append(cluster_max_distances[i]['color'])
+        sphere_colors.append(cluster_max_distances[i]["color"])
         images = color_palette[i]
         if len(images) > 0:
-            color_palette[cluster_max_distances[i]['color']] = images
+            color_palette[cluster_max_distances[i]["color"]] = images
         del color_palette[i]
-    
+
     return color_palette, spheres, sphere_colors
+
 
 @app.callback(
     # Output('main-colors-chart', 'figure'),
-    Output('main-colors-chart-container', 'children'),
-    Output('colors-dict', 'data'),
-    Output('color-palette', 'data'),
-    Input('step-slider', 'value'),
-    Input('re-run-btn', 'n_clicks'),
-    State('output-image-upload', 'children'),
-    State('colors-dict', 'data'),
-    State('color-palette', 'data'),
-    State('n-colors', 'value'),
-    State('seed', 'value'),
-    prevent_initial_call=True
+    Output("main-colors-chart-container", "children"),
+    Output("colors-dict", "data"),
+    Output("color-palette", "data"),
+    Input("step-slider", "value"),
+    Input("re-run-btn", "n_clicks"),
+    State("output-image-upload", "children"),
+    State("colors-dict", "data"),
+    State("color-palette", "data"),
+    State("n-colors", "value"),
+    State("seed", "value"),
+    prevent_initial_call=True,
 )
 def build_graph(step, run, images, colors_dict, colors_palette, n_clusters, seed):
     # print('CALL EXTRACT COLOR')
     if step == 0:
-        return dcc.Graph(
-                id="main-colors-chart",
-                style={
-                    'height': '60vh'
-                }
-            ), None, None
-            
-    if step != 1 and step != 2:
-        return dcc.Graph(
-                id="main-colors-chart",
-                style={
-                    'height': '60vh'
-                }
-            ), colors_dict, colors_palette
+        return dcc.Graph(id="main-colors-chart", style={"height": "60vh"}), None, None
 
-    msg = f'to extract the main color from {len(images)} images'
+    if step != 1 and step != 2:
+        return (
+            dcc.Graph(id="main-colors-chart", style={"height": "60vh"}),
+            colors_dict,
+            colors_palette,
+        )
+
+    msg = f"to extract the main color from {len(images)} images"
 
     tic = time.perf_counter()
-    
+
     color_palette = {}
 
     if step == 1:
-        colors_dict = generate_colors_dict(images, seed) if colors_dict == None or dash.callback_context.triggered[0]['prop_id'] == 're-run-btn.n_clicks' else colors_dict
+        colors_dict = (
+            generate_colors_dict(images, seed)
+            if colors_dict == None
+            or dash.callback_context.triggered[0]["prop_id"] == "re-run-btn.n_clicks"
+            else colors_dict
+        )
 
         df_list = list(colors_dict.values())
 
@@ -1029,97 +1113,123 @@ def build_graph(step, run, images, colors_dict, colors_palette, n_clusters, seed
         if n_clusters > len(colors_dict):
             n_clusters = len(colors_dict)
 
-        color_palette, spheres, sphere_colors = generate_color_palette(colors_dict, n_clusters, seed)
+        color_palette, spheres, sphere_colors = generate_color_palette(
+            colors_dict, n_clusters, seed
+        )
 
         fig = plot_graph(df_list, spheres=spheres, sphere_colors=sphere_colors)
-        
-        msg = 'to generate the palette'
+
+        msg = "to generate the palette"
 
     tac = time.perf_counter()
-    log.info(f'Took {tac - tic} seconds {msg}')
+    log.info(f"Took {tac - tic} seconds {msg}")
 
-    return dcc.Graph(
-        figure=fig,
-        id="main-colors-chart",
-        style={
-            'height': '60vh'
-        }
-    ), colors_dict, color_palette
+    return (
+        dcc.Graph(figure=fig, id="main-colors-chart", style={"height": "60vh"}),
+        colors_dict,
+        color_palette,
+    )
+
 
 @app.callback(
-    Output('display-images-col', 'children'),
-    Output('related-images-title', 'children'),
-    Input('main-colors-chart', 'clickData'),
-    Input('next-step-btn', 'n_clicks'),
-    Input('prev-step-btn', 'n_clicks'),
-    State('colors-dict', 'data'),
-    State('color-palette', 'data'),
-    State('main-colors-chart', 'figure'),
-    prevent_initial_call=True
+    Output("display-images-col", "children"),
+    Output("related-images-title", "children"),
+    Input("main-colors-chart", "clickData"),
+    Input("next-step-btn", "n_clicks"),
+    Input("prev-step-btn", "n_clicks"),
+    State("colors-dict", "data"),
+    State("color-palette", "data"),
+    State("main-colors-chart", "figure"),
+    prevent_initial_call=True,
 )
 def clicked_point(point_info, next_click, prev_click, colors_dict, color_palette, fig):
     if point_info == None:
         return dash.no_update
 
-    if dash.callback_context.triggered[0]['prop_id'] == 'next-step-btn.n_clicks' or dash.callback_context.triggered[0]['prop_id'] == 'prev-step-btn.n_clicks':
+    if (
+        dash.callback_context.triggered[0]["prop_id"] == "next-step-btn.n_clicks"
+        or dash.callback_context.triggered[0]["prop_id"] == "prev-step-btn.n_clicks"
+    ):
         return [
             html.H6(
                 [
                     "Click on a data point in the chart to see the images with that predominant color"
-                ], 
+                ],
                 className="text-center",
                 style={
-                    'margin-top': '1%',
-                }
+                    "margin-top": "1%",
+                },
             ),
             Lottie(
-                options=dict(loop=True, autoplay=True), width="25%",
+                options=dict(loop=True, autoplay=True),
+                width="25%",
                 url="https://assets7.lottiefiles.com/packages/lf20_K0lHJ8.json",
                 isClickToPauseDisabled=True,
-                style={
-                    'margin-bottom': '3%',
-                    'cursor': 'default'
-                }
-            )
+                style={"margin-bottom": "3%", "cursor": "default"},
+            ),
         ], ["No points clicked"]
 
-    if 'customdata' in point_info['points'][0]:
-        color = point_info['points'][0]['customdata'][0][1:]
-        r, g, b = colors_dict[color]['rgb']
+    if "customdata" in point_info["points"][0]:
+        color = point_info["points"][0]["customdata"][0][1:]
+        r, g, b = colors_dict[color]["rgb"]
 
         text_color = get_text_color(r, g, b)
 
-        return [dbc.Col(html.Img(src=image, width='100%', className="uploaded-img"), width="3") for image in colors_dict[color]['images']], \
-            ["Images with the predominant color: ", dbc.Badge(color, color="#" + color, text_color=text_color, className="ms-1")]
-    elif 'curveNumber' in point_info['points'][0]: 
-        curveNumber = point_info['points'][0]['curveNumber']
-        cluster_name = fig['data'][curveNumber]['name']
-        color = fig['data'][curveNumber]['colorscale'][0][1]
+        return [
+            dbc.Col(
+                html.Img(src=image, width="100%", className="uploaded-img"), width="3"
+            )
+            for image in colors_dict[color]["images"]
+        ], [
+            "Images with the predominant color: ",
+            dbc.Badge(
+                color, color="#" + color, text_color=text_color, className="ms-1"
+            ),
+        ]
+    elif "curveNumber" in point_info["points"][0]:
+        curveNumber = point_info["points"][0]["curveNumber"]
+        cluster_name = fig["data"][curveNumber]["name"]
+        color = fig["data"][curveNumber]["colorscale"][0][1]
 
         r, g, b = list(binascii.unhexlify(color[1:]))
 
         text_color = get_text_color(r, g, b)
 
-        return [dbc.Col(html.Img(src=image, width='100%', height='109px', className="uploaded-img", style={'margin-bottom': '10px'}), width="auto") for image in color_palette[color]], \
-            ["Images contained in: ", dbc.Badge(cluster_name, color=color, text_color=text_color, className="ms-1")]
+        return [
+            dbc.Col(
+                html.Img(
+                    src=image,
+                    width="100%",
+                    height="109px",
+                    className="uploaded-img",
+                    style={"margin-bottom": "10px"},
+                ),
+                width="auto",
+            )
+            for image in color_palette[color]
+        ], [
+            "Images contained in: ",
+            dbc.Badge(
+                cluster_name, color=color, text_color=text_color, className="ms-1"
+            ),
+        ]
     return [], []
+
 
 def get_text_color(r, g, b):
     # HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
-    hsp = math.sqrt(
-        0.299 * (r * r) +
-        0.587 * (g * g) +
-        0.114 * (b * b)
-    )
+    hsp = math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
 
-    if hsp>127.5:
-        return 'black'
-    
-    return 'white'
+    if hsp > 127.5:
+        return "black"
+
+    return "white"
+
 
 ##### END STEP 2 AND 3 #####
 
 ##### END STEP 4 #####
+
 
 def collage(color_palette, base64_image):
 
@@ -1132,9 +1242,9 @@ def collage(color_palette, base64_image):
 
     ima_size = 20
 
-    image_type, image = base64_image.split(',')
+    image_type, image = base64_image.split(",")
 
-    if 'svg' in image_type:
+    if "svg" in image_type:
         svg_im = base64.b64decode(image)
         out = BytesIO()
         cairosvg.svg2png(bytestring=svg_im, write_to=out)
@@ -1149,11 +1259,11 @@ def collage(color_palette, base64_image):
     final_width = math.ceil(template.size[0] * ratio)
     final_height = math.ceil(template.size[1] * ratio)
 
-    log.info(f'Generating collage for {final_width}x{final_height} image')
+    log.info(f"Generating collage for {final_width}x{final_height} image")
 
-    template_width = final_width//ima_size
-    template_height = final_height//ima_size
-    
+    template_width = final_width // ima_size
+    template_height = final_height // ima_size
+
     template = template.resize((template_width, template_height))
 
     # Convert color palette to im objects
@@ -1162,12 +1272,17 @@ def collage(color_palette, base64_image):
     for color, images in color_palette.items():
         parsed_images = []
         for base64_image in images:
-            image_type, image = base64_image.split(',')
+            image_type, image = base64_image.split(",")
 
-            if 'svg' in image_type:
+            if "svg" in image_type:
                 svg_im = base64.b64decode(image)
                 out = BytesIO()
-                cairosvg.svg2png(bytestring=svg_im, write_to=out, output_width=ima_size, output_height=ima_size)
+                cairosvg.svg2png(
+                    bytestring=svg_im,
+                    write_to=out,
+                    output_width=ima_size,
+                    output_height=ima_size,
+                )
                 im = Image.open(out)
             else:
                 im = Image.open(BytesIO(base64.b64decode(image)))
@@ -1177,10 +1292,12 @@ def collage(color_palette, base64_image):
             parsed_images.append(im)
         new_color_palette[color] = parsed_images
 
-    new_im = Image.new('RGB', (template_width * ima_size, template_height * ima_size))
+    new_im = Image.new("RGB", (template_width * ima_size, template_height * ima_size))
 
     cluster_hex_colors = list(color_palette.keys())
-    cluster_colors = [list(binascii.unhexlify(color[1:])) for color in color_palette.keys()]
+    cluster_colors = [
+        list(binascii.unhexlify(color[1:])) for color in color_palette.keys()
+    ]
     cluster_last_image_idx = [0 for images in color_palette.values()]
 
     for row in range(template.size[0]):
@@ -1190,7 +1307,11 @@ def collage(color_palette, base64_image):
             closest_idx = 0
             closest_distance = 9999999999999999
             for i, color in enumerate(cluster_colors):
-                dist = math.sqrt((rgb[0]-color[0])**2 + (rgb[1]-color[1])**2 + (rgb[2]-color[2])**2)
+                dist = math.sqrt(
+                    (rgb[0] - color[0]) ** 2
+                    + (rgb[1] - color[1]) ** 2
+                    + (rgb[2] - color[2]) ** 2
+                )
                 if dist < closest_distance:
                     closest_idx = i
                     closest_distance = dist
@@ -1210,28 +1331,30 @@ def collage(color_palette, base64_image):
             new_im.paste(im, (row * ima_size, col * ima_size))
 
     tac = time.perf_counter()
-    log.info(f'Took {tac - tic} seconds to generate the collage')
+    log.info(f"Took {tac - tic} seconds to generate the collage")
 
     return new_im
 
+
 @app.callback(
-    Output("reference-image-col", "children"), 
-    Input('upload-reference-image', 'contents'),
-    Input('test-reference-btn', 'n_clicks'),
+    Output("reference-image-col", "children"),
+    Input("upload-reference-image", "contents"),
+    Input("test-reference-btn", "n_clicks"),
     prevent_initial_call=True,
 )
 def show_reference_photo(contents, n_clicks):
-    if dash.callback_context.triggered[0]['prop_id'] == 'test-reference-btn.n_clicks':
+    if dash.callback_context.triggered[0]["prop_id"] == "test-reference-btn.n_clicks":
         contents = f"data:image/jpg;base64,{base64.b64encode(open('app/assets/reference.JPEG', 'rb').read()).decode('utf-8')}"
 
-    return html.Img(src=contents, height='100%', id="reference-img"),
+    return (html.Img(src=contents, height="100%", id="reference-img"),)
+
 
 # @app.callback(
-#     Output("placeholder", "children"), 
-#     Output("collage-image-loading-col", "style"), 
+#     Output("placeholder", "children"),
+#     Output("collage-image-loading-col", "style"),
 #     Input("generate-collage-btn", "n_clicks"),
-#     State("reference-image-col", "children"), 
-#     prevent_initial_call=True, 
+#     State("reference-image-col", "children"),
+#     prevent_initial_call=True,
 #     log=True
 # )
 # def generate_collage(n_clicks, reference_image, dash_logger: DashLogger):
@@ -1242,21 +1365,30 @@ def show_reference_photo(contents, n_clicks):
 #     dash_logger.info("Generating the collage")
 #     return ["fire"], { 'margin-top': '20px', 'margin-bottom': '50px' }
 
+
 @app.callback(
-    Output("collage-image-col", "children"), 
-    Output('download-collage-btn', 'disabled'),
+    Output("collage-image-col", "children"),
+    Output("download-collage-btn", "disabled"),
     Input("generate-collage-btn", "n_clicks"),
-    State("reference-image-col", "children"), 
-    State('color-palette', 'data'),
+    State("reference-image-col", "children"),
+    State("color-palette", "data"),
     prevent_initial_call=True,
-    log=True
+    log=True,
 )
 def generate_collage(n_clicks, reference_image, color_palette, dash_logger: DashLogger):
-    if 'src' not in reference_image[0]['props']:
+    if "src" not in reference_image[0]["props"]:
         dash_logger.error("Please choose a reference image")
         return None, True
     dash_logger.info("Hover over the resulting collage to see detail")
-    return [html.Img(src=collage(color_palette, reference_image[0]['props']['src']), height='100%', id="collage-img", style={'display': 'block', 'width': 'auto'}),], False
+    return [
+        html.Img(
+            src=collage(color_palette, reference_image[0]["props"]["src"]),
+            height="100%",
+            id="collage-img",
+            style={"display": "block", "width": "auto"},
+        ),
+    ], False
+
 
 app.clientside_callback(
     """
@@ -1274,20 +1406,22 @@ app.clientside_callback(
         return ['zoom'];
     }
     """,
-    Output('placeholder', 'children'),
-    Input('collage-image-col', 'children'),
-    State('placeholder', 'children'),
+    Output("placeholder", "children"),
+    Input("collage-image-col", "children"),
+    State("placeholder", "children"),
     prevent_initial_call=True,
 )
 
+
 @app.callback(
-    Output("download-collage", "data"), 
-    Input('download-collage-btn', 'n_clicks'),
-    State('collage-img', 'src'),
+    Output("download-collage", "data"),
+    Input("download-collage-btn", "n_clicks"),
+    State("collage-img", "src"),
     prevent_initial_call=True,
 )
 def download_collage(n_clicks, image_base64):
-    return dcc.send_bytes(base64.b64decode(image_base64.split(',')[1]), "collage.png")
+    return dcc.send_bytes(base64.b64decode(image_base64.split(",")[1]), "collage.png")
+
 
 ##### END STEP 4 #####
 
