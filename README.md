@@ -42,5 +42,5 @@ Run:
 
 ```
 docker build -t collage-maker .
-docker run -p 8080:80 collage-maker
+docker run -d --name collage-maker -p 8050:8050 collage-maker
 ```

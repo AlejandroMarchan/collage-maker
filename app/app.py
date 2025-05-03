@@ -1426,4 +1426,4 @@ def download_collage(n_clicks, image_base64):
 ##### END STEP 4 #####
 
 if __name__ == "__main__":
-    app.run_server(debug=True, host="0.0.0.0", port=8080, use_reloader=False)
+    app.run_server(debug=False, host="0.0.0.0", port=8050, use_reloader=False)
